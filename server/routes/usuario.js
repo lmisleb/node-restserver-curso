@@ -1,15 +1,21 @@
 const express = require('express');
-
 const bcrypt = require('bcrypt');
 const _ = require('underscore');
-
 const Usuario = require('../models/usuario');
-
+const { verificaToken, verificaAdmin_Role } = require('../middlewares/autenticacion');
 const app = express();
 
-// peticiones al servidor
+// Peticiones al servidor
 
-app.get('/usuario', function(req, res) {
+//Listar usuarios
+app.get('/usuario', verificaToken, (req, res) => {
+    //app.get('/usuario', (req, res) => {
+
+    // return res.json({
+    //     usuario: req.usuario,
+    //     nombre: req.usuario.nombre,
+    //     email: req.usuario.email
+    // });
 
     let desde = req.query.desde || 0;
     desde = Number(desde);
@@ -39,7 +45,9 @@ app.get('/usuario', function(req, res) {
         })
 });
 
-app.post('/usuario', function(req, res) {
+//Crear usuario
+app.post('/usuario', [verificaToken, verificaAdmin_Role], function(req, res) {
+    //app.post('/usuario', function(req, res) {
 
     let body = req.body;
 
@@ -66,7 +74,9 @@ app.post('/usuario', function(req, res) {
     });
 });
 
-app.put('/usuario/:id', function(req, res) {
+//Modificar usuario
+app.put('/usuario/:id', [verificaToken, verificaAdmin_Role], function(req, res) {
+    //app.put('/usuario/:id', function(req, res) {
 
     let id = req.params.id;
     let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']);
@@ -76,7 +86,9 @@ app.put('/usuario/:id', function(req, res) {
         if (err) {
             return res.status(400).json({
                 ok: false,
-                err
+                err: {
+                    message: 'Usuario no existe'
+                }
             });
         }
 
@@ -87,7 +99,9 @@ app.put('/usuario/:id', function(req, res) {
     })
 });
 
-app.delete('/usuario/:id', function(req, res) {
+//Eliminar usuario
+app.delete('/usuario/:id', [verificaToken, verificaAdmin_Role], function(req, res) {
+    //app.delete('/usuario/:id', function(req, res) {
 
     let id = req.params.id;
 
@@ -104,7 +118,9 @@ app.delete('/usuario/:id', function(req, res) {
         if (err) {
             return res.status(400).json({
                 ok: false,
-                err
+                err: {
+                    message: 'Usuario no existe'
+                }
             });
         };
 
@@ -122,7 +138,6 @@ app.delete('/usuario/:id', function(req, res) {
             usuario: usuarioEliminado
         });
     })
-
 });
 
 module.exports = app;
