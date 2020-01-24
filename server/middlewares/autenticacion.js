@@ -14,7 +14,7 @@ let verificaToken = (req, res, next) => {
             return res.status(401).json({
                 ok: false,
                 err: {
-                    message: 'Token inválido'
+                    message: 'Token inválido.'
                 }
             });
         }
@@ -41,7 +41,7 @@ let verificaAdmin_Role = (req, res, next) => {
         res.json({
             ok: false,
             err: {
-                message: 'El usuario no es administrador'
+                message: 'El usuario no es administrador.'
             }
         });
 
